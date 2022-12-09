@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %} 
+
+{% block content %}
+<article class="post" enctype="multipart/form-data">
+    <aside class="actions">
+        {% if user.is_authenticated %}
+
+        <a class="btn btn-secondary" href="{% url 'profile_edit' user.username %}">
+            
+        {% include './icons/pencil-fill.svg' %}
+     </a>
+     
+     {% endif %}
+    </aside>
+
+    <h6>image= {{ user.image.url }}</h6>
+    <h6 style="font-size: 16px;">first_name= {{ user.first_name }}</h6>
+    <h6>last_name= {{ user.last_name }}</h6>
+    <h6>username= {{ user.username }}</h6>
+    <h6>email= {{ user.email }}</h6>
+    <h6>city= {{ user.city }}</h6>
+    <h6>country= {{ user.country }}</h6>
+    
+</article>
+{% endblock %}

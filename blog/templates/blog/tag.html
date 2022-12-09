@@ -1,0 +1,20 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+
+
+{% for post in posts %}
+<article>
+
+  <time style="margin-left: 75%;">published: {{ post.published_date }} </time>
+  <h2><a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+  <h6> tag : <a href="">{{ tag.name }}</a></h6>
+  
+
+  <p>{{ post.text|linebreaksbr }}</p>
+
+
+</article>
+
+  {% endfor %}
+
+{% endblock %}
