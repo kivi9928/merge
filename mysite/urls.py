@@ -16,15 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls.static import static 
+from blog.api_url import api_view
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('userinfo', api_view.getData),
     path('', include('blog.urls')),
+    path('blog/', include('blog.api_url')),
+    # path('userinfo/',api_view.getData),
+    # path('userinfo/<int:pk>/', api_view.getData),
+    # path('postinfo/',api_view.postData),
+    # path('categoryinfo/',api_view.categoryData),
+    # path('categoryinfo/<int:pk>/',api_view.categoryData),
     path('polls/', include('polls.urls')),
-    
+   
 ]
+
 
 urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

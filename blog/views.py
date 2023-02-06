@@ -2,11 +2,9 @@
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from .form import PostForm, LogInForm, SignUpForm, ProfileEditForm, CommentForm 
-from .models import Post, User,Comment
+from .models import Post, User,Comment,Tag,Category
 from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import login, authenticate, logout 
-
-
+from django.contrib.auth import login, authenticate, logout
 
 
 def post_list(request):
@@ -32,29 +30,29 @@ def post_detail(request, slug):
             if comment_form.is_valid():
                 new_comment = comment_form.save(commit=False)
                 new_comment.post = post
-                new_comment.save()
-       
+                new_comment.save()       
     else:
         comment_form = CommentForm()
     return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments, 'new_comment': new_comment, 'comment_form': comment_form})       
 
-def category(request, slug):
-    post = get_object_or_404(Post, slug=slug)
-    posts = Post.objects.filter(category = post.category)
 
+def category(request, slug):
+    category = Category.objects.filter( slug=slug).last()
+    posts = Post.objects.filter(category=category).all()
     return render(request, 'blog/category.html', {'posts': posts})
 
+
 def tag(request,slug):  
-    post = get_object_or_404(Post, slug=slug)
-    posts = Post.objects.filter(id=12)
+    tag = Tag.objects.filter( slug=slug).last()
+    posts = Post.objects.filter( tag=tag).all()
     return render(request, 'blog/tag.html', {'posts': posts})
+
 
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST,request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
-            # post.tag = form.cleaned_data("tag")
             post.published_date = timezone.now()
             post.save()
             return redirect('post_detail', slug=post.slug)
@@ -65,17 +63,19 @@ def post_new(request):
 
 def post_edit(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    if request.method == "POST":
-        
+    if request.method == "POST": 
         form = PostForm(request.POST, request.FILES, instance=post)
+        tag=get_object_or_404(Tag, id=request.POST.get('tag'))
         if form.is_valid():
             post = form.save(commit=False)
             post.published_date = timezone.now()
             post.save()
+            post.tag.add(tag)
             return redirect('post_detail', slug=post.slug)
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+
 
 def signup(request):
     if request.method == 'POST':
@@ -106,7 +106,6 @@ def log_in(request):
                 return redirect('post_list')
             else:
                 form = LogInForm()
-
     return render(request, 'blog/login.html', {'form': form})
 
 
@@ -114,36 +113,32 @@ def log_out(request):
     logout(request)
     return redirect('post_list')
 
-def profile(request, username):
 
+def profile(request, username):
     user = get_user_model().objects.filter(username=username).first()
     if user:
-        form = UpdateProfile(instance=user)
-        
+        form = UpdateProfile(instance=user)        
     if form.is_valid():
             user_form = form.save()
-
             messages.success(request, f'{user_form}, Your profile has been updated!')
             return redirect('blog/profile.html', user_form.username)
-
     else:
        for error in list(form.errors.values()):
-               messages.error(request, error)
-   
-                                                     
-               return render(request, 'profile.html', context)
+               messages.error(request, error)                                                    
+               return render(request, 'profile.html')
 
 
 def profile_view(request, username):
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)         
     return render(request, 'blog/profile.html', {'user': user})
+
 
 def profile_edit(request, username):
     user = get_object_or_404(User, username=username)
     if request.method == "POST":
-        user_form = ProfileEditForm(request.POST, instance=user)
+        user_form = ProfileEditForm(request.POST, request.FILES, instance=user)
         if user_form.is_valid():
-            
+            user.set_password(request.POST.get('password1'))        
             user_form.save()
             return redirect(profile_view, user.username)
     else:

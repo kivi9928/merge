@@ -1,14 +1,23 @@
  {% extends 'blog/base.html' %} 
-
  {% block content %} 
  
- {% for post in posts %}
 <article>
-
-    <time style="margin-left: 75%;">published: {{ post.published_date }} </time>
-    <h2><a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a></h2>
-    <h6>Post Category: <a href="{% url 'category' slug=post.slug %}">{{ post.category }}</a></h6>
-    <p>{{ post.text|linebreaksbr }}</p>
-
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for post in posts %}
+    <div class="col">       
+      <div class="card">
+        <form  method="post" enctype="multipart/form-data">
+            <img class="card-img-top" src="{{ post.image.url }}" alt="{{post.title}}" style="width:100%;height:300px;">
+            </form>  
+            
+        <time style="margin-left: 75%;"  class="card-published_date">published: {{ post.published_date }} </time>
+        <h2 class="card-title"><a href="{% url 'post_detail' slug=post.slug %}" >{{ post.title }}</a></h2>
+        <h6 class="card-category">Post Category: <a href="{% url 'category' post.category %}">{{ post.category }}</a></h6>
+        <p class="card-text" >{{ post.text|safe|linebreaksbr|truncatechars:100}}</p>
+      </div>
+      
+    </div> 
+    {% endfor %}   
+</div>  
 </article>
-{% endfor %} {% endblock %}
+{% endblock %}

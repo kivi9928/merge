@@ -1,25 +1,29 @@
 {% extends 'blog/base.html' %} 
-
 {% block content %}
+
 <article class="post" enctype="multipart/form-data">
     <aside class="actions">
         {% if user.is_authenticated %}
-
-        <a class="btn btn-secondary" href="{% url 'profile_edit' user.username %}">
-            
+        <a class="btn btn-secondary" href="{% url 'profile_edit' user.username %}">           
         {% include './icons/pencil-fill.svg' %}
-     </a>
-     
+     </a>     
      {% endif %}
-    </aside>
-
-    <h6>image= {{ user.image.url }}</h6>
-    <h6 style="font-size: 16px;">first_name= {{ user.first_name }}</h6>
-    <h6>last_name= {{ user.last_name }}</h6>
-    <h6>username= {{ user.username }}</h6>
-    <h6>email= {{ user.email }}</h6>
-    <h6>city= {{ user.city }}</h6>
-    <h6>country= {{ user.country }}</h6>
-    
-</article>
+    </aside> 
+    <div class="well">
+        <ul class="nav nav-tabs">
+          
+    {% if user.image %} 
+    <img src="{{ user.image.url }}" alt="{{user.first_name}}" >
+    {% endif %}</ul>
+    <form >               
+    <label>first_name= {{ user.first_name }}</label><br>                  
+    <label>last_name= {{ user.last_name }}</label><br>
+    <label>username= {{ user.username }}</label><br>
+    <label>email= {{ user.email }}</label><br>
+    <label>city= {{ user.city }}</label><br>
+    <label>country= {{ user.country }}</label><br> 
+    </form>                           
+           
+</article>                   
 {% endblock %}
+

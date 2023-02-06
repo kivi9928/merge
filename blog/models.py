@@ -5,28 +5,23 @@ from django.utils import timezone
 from django_extensions.db.fields import AutoSlugField
 
 
-
 class User(AbstractUser):
-    
      email = models.EmailField( null=True)
      phone_no =models.CharField(max_length= 10, null=True)
      city = models.CharField(max_length=20, null=True)
      country = models.CharField(max_length=20, null = True)
-     image = models.ImageField()
-
+     image = models.ImageField( upload_to='profile/')
+    
      def __str__(self):
-        return self.email
+        return str(self.pk)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = AutoSlugField(populate_from='name', unique=True)
-    
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return reversed("post_detail", kwargs={"slug": self.slug})
 
 
 class Tag(models.Model):
@@ -36,16 +31,12 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reversed("post_detail", kwargs={"slug": self.slug})
-
-
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    slug = AutoSlugField(populate_from='title', max_length=500, unique=True)
+    slug = AutoSlugField(populate_from='title',  editable=True, unique=True)
     text = models.TextField()
     tag = models.ManyToManyField(Tag)
     created_date = models.DateTimeField(default=timezone.now)
@@ -57,7 +48,7 @@ class Post(models.Model):
         self.save()
 
     def __str__(self):
-        return self.title
+        return str(self.pk)
 
 
 class Comment(models.Model):
@@ -77,6 +68,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.name
-
-
-
